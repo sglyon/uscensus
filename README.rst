@@ -8,7 +8,7 @@ Installation
 
 .. code:: shell
 
-    pip install uscensus
+    pip install git+git://github.com/sglyon/uscensus.git
 
 Usage
 =====
