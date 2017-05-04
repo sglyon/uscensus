@@ -7,13 +7,10 @@ import warnings
 
 import pandas as pd
 import requests
+from .util import DATA_DIR, KEY_ENV_NAME, KEY_FILE_NAME, DEFAULT_API_URL
 
 MAX_ATTEMPTS = 3
-DEFAULT_API_URL = "http://api.census.gov/data/"
-API_KEY_LENGTH = 40
-KEY_ENV_NAME = "USCENSUS_API_KEY"
-KEY_FILE_NAME = os.path.join(os.path.expanduser("~"), ".uscensusdatarc")
-DATA_DIR = os.path.join(os.path.expanduser("~"), ".uscensus", "data")
+
 
 if not os.path.isdir(DATA_DIR):
     os.makedirs(DATA_DIR)
@@ -89,6 +86,7 @@ class CensusData(object):
             else:
                 raise EnvironmentError("Census API key not detected")
 
+        API_KEY_LENGTH = 40
         if len(key) > API_KEY_LENGTH:
             key = key[:API_KEY_LENGTH]
             msg = f"API key too long, using first {API_KEY_LENGTH} characters"
@@ -156,13 +154,18 @@ class CensusData(object):
         var_string = ",".join(variables)
         query = f"?get={var_string}&key={self.key}"
 
-        # all kwargs must also be valid varirables, except for state
+        # all kwargs must also be valid varirables, except for state, us,
         # and county, which are handled separately
         state = kwargs.pop("state", [])
         county = kwargs.pop("county", [])
-        self.validate_vars(kwargs.keys())
+        if "us" in kwargs:
+            # if US is present, then we will skip the state/county args
+            query += "&for=us:*"
+            kwargs.pop("us")
+        else:
+            query += self._geography_query(state, county)
 
-        query += self._geography_query(state, county)
+        self.validate_vars(kwargs.keys())
 
         for (k, v) in kwargs.items():
             if k != "state" and k != "county":
@@ -174,13 +177,29 @@ class CensusData(object):
             msg += f"Response from server was\n{r.content}"
             raise QueryError(msg, r)
 
-        js = r.json()
-        df = pd.DataFrame(js[1:], columns=js[0])
+        try:
+            js = r.json()
+            df = pd.DataFrame(js[1:], columns=js[0])
+        except:
+            if "SIC" in kwargs:
+                try:
+                    df = pd.read_json(r.content.replace(b"\\", b""))
+                    df.columns = df.iloc[0, :].tolist()
+                    df.drop(0, axis=0, inplace=True)
+                except:
+                    msg = "Couldn't parse query result into DataFrame."
+                    raise QueryError(msg, r)
 
         for k in df.columns:
-            if k == "state" or k == "county":
+            if k == "state" or k == "county" or k == "us":
                 df[k] = df[k].astype(int)
                 continue
+
+            if k == "SIC":
+                try:
+                    df[k] = df[k].astype(int)
+                except:
+                    continue
 
             dtype_str = self.vars_df.loc["predicateType", k]
             if dtype_str == "string":
