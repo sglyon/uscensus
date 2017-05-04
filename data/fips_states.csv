@@ -1,56 +1,56 @@
-Abbreviation,FIPS,Name
-AK,02,Alaska
-MS,28,Mississippi
-AL,01,Alabama
-MT,30,Montana
-AR,05,Arkansas
-NC,37,North Carolina
-AS,60,American Samoa
-ND,38,North Dakota
-AZ,04,Arizona
-NE,31,Nebraska
-CA,06,California
-NH,33,New Hampshire
-CO,08,Colorado
-NJ,34,New jersey
-CT,09,Connecticut
-NM,35,New Mexico
-DC,11,District of Columbia
-NV,32,Nevada
-DE,10,Delaware
-NY,36,New York
-FL,12,Florida
-OH,39,Ohio
-GA,13,Georgia
-OK,40,Oklahoma
-GU,66,Guam
-OR,41,Oregon
-HI,15,Hawaii
-PA,42,Pennsylvania
-IA,19,Iowa
-PR,72,Puerto rico
-ID,16,Idaho
-RI,44,Rhode island
-IL,17,Illinois
-SC,45,South Carolina
-IN,18,Indiana
-SD,46,South Dakota
-KS,20,Kansas
-TN,47,Tennessee
-KY,21,Kentucky
-TX,48,Texas
-LA,22,Louisiana
-UT,49,Utah
-MA,25,Massachusetts
-VA,51,Virginia
-MD,24,Maryland
-VI,78,Virgin islands
-ME,23,Maine
-VT,50,Vermont
-MI,26,Michigan
-WA,53,Washington
-MN,27,Minnesota
-WI,55,Wisconsin
-MO,29,Missouri
-WV,54,West Virginia
-WY,56,Wyoming
+FIPS,Abbreviation,Name
+2,AK,Alaska
+28,MS,Mississippi
+1,AL,Alabama
+30,MT,Montana
+5,AR,Arkansas
+37,NC,North Carolina
+60,AS,American Samoa
+38,ND,North Dakota
+4,AZ,Arizona
+31,NE,Nebraska
+6,CA,California
+33,NH,New Hampshire
+8,CO,Colorado
+34,NJ,New jersey
+9,CT,Connecticut
+35,NM,New Mexico
+11,DC,District of Columbia
+32,NV,Nevada
+10,DE,Delaware
+36,NY,New York
+12,FL,Florida
+39,OH,Ohio
+13,GA,Georgia
+40,OK,Oklahoma
+66,GU,Guam
+41,OR,Oregon
+15,HI,Hawaii
+42,PA,Pennsylvania
+19,IA,Iowa
+72,PR,Puerto rico
+16,ID,Idaho
+44,RI,Rhode island
+17,IL,Illinois
+45,SC,South Carolina
+18,IN,Indiana
+46,SD,South Dakota
+20,KS,Kansas
+47,TN,Tennessee
+21,KY,Kentucky
+48,TX,Texas
+22,LA,Louisiana
+49,UT,Utah
+25,MA,Massachusetts
+51,VA,Virginia
+24,MD,Maryland
+78,VI,Virgin islands
+23,ME,Maine
+50,VT,Vermont
+26,MI,Michigan
+53,WA,Washington
+27,MN,Minnesota
+55,WI,Wisconsin
+29,MO,Missouri
+54,WV,West Virginia
+56,WY,Wyoming
