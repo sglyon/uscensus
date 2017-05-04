@@ -123,7 +123,7 @@ class CensusData(object):
 
             # state is not empty
             out += "&for=" + geo_predicate_string("state", state)
-            return
+            return out
 
         # county is not empty
         out += "&for=" + geo_predicate_string("county", county)
