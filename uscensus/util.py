@@ -67,10 +67,59 @@ def get_fips_2010():
         return update_fips_2010()
 
 
+def get_naics2002_to_sics():
+    path = os.path.join(DATA_DIR, "naics2002_to_sic.csv")
+    if os.path.isfile(path):
+        return pd.read_csv(path, index_col=0)
+    else:
+        return update_naics2002_to_sics()
+
+
 # stuff to make working with this data bearable
-def naics2002_to_sics(start):
+def update_naics2002_to_sics(start):
     url = "https://www.census.gov/eos/www/naics/"
     url += "concordances/1987_SIC_to_2002_NAICS.xls"
     df = pd.read_excel(url, skip_footer=1)
+    df.to_csv(os.path.join(DATA_DIR, "naics2002_to_sic.csv"))
+    return df
+
+
+def naics2002_to_sics(start):
+    df = get_naics2002_to_sics()
     subsets = df[df["2002 NAICS"].astype(str).str.startswith(start)]
     return subsets["SIC"].dropna().astype(int).unique()
+
+
+# SIC codes
+def update_sic86():
+    url = "http://www2.census.gov/programs-surveys/cbp/technical-documentation"
+    url += "/records-layouts/sic-code-descriptions/sic86.txt"
+    df = pd.read_csv(url, sep="    ")
+    df.columns = ["SIC", "NAME"]
+    df.to_csv(os.path.join(DATA_DIR, "sic86.csv"))
+    return df
+
+
+def get_sic86():
+    path = os.path.join(DATA_DIR, "sic86.csv")
+    if os.path.isfile(path):
+        return pd.read_csv(path, index_col=0)
+    else:
+        return update_sic86()
+
+
+def update_sic87():
+    url = "http://www2.census.gov/programs-surveys/cbp/technical-documentation"
+    url += "/records-layouts/sic-code-descriptions/sic87.txt"
+    df = pd.read_csv(url, sep="    ")
+    df.columns = ["SIC", "NAME"]
+    df.to_csv(os.path.join(DATA_DIR, "sic87.csv"))
+    return df
+
+
+def get_sic87():
+    path = os.path.join(DATA_DIR, "sic87.csv")
+    if os.path.isfile(path):
+        return pd.read_csv(path, index_col=0)
+    else:
+        return update_sic87()
