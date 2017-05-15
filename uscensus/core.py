@@ -7,9 +7,8 @@ import warnings
 
 import pandas as pd
 import requests
+from requests.adapters import HTTPAdapter
 from .util import DATA_DIR, KEY_ENV_NAME, KEY_FILE_NAME, DEFAULT_API_URL
-
-MAX_ATTEMPTS = 3
 
 
 if not os.path.isdir(DATA_DIR):
@@ -102,6 +101,9 @@ class CensusData(object):
         self.key = key
         self.url = url
 
+        self.sess = requests.Session()
+        self.sess.mount(self.url, HTTPAdapter(max_retries=3))
+
         # NOTE: subclasses must define self.dataset, self.meta, and
         # self.vars_df
 
@@ -132,7 +134,8 @@ class CensusData(object):
 
         return out
 
-    def get(self, variables, start_time=None, end_time=None, **kwargs):
+    def get(self, variables, start_time=None, end_time=None, timeout=None,
+            **kwargs):
         """
         Get the specified variables from the data set
 
@@ -171,7 +174,7 @@ class CensusData(object):
             if k != "state" and k != "county":
                 query += query_predicate_string(k, v)
 
-        r = requests.get(self.url + self.dataset + query)
+        r = self.sess.get(self.url + self.dataset + query, timeout=timeout)
         if r.status_code != 200:
             msg = f"Query failed with status code {r.status_code}. "
             msg += f"Response from server was\n{r.content}"
@@ -181,7 +184,7 @@ class CensusData(object):
             js = r.json()
             df = pd.DataFrame(js[1:], columns=js[0])
         except:
-            if "SIC" in kwargs:
+            if "SIC" in kwargs or "SIC" in variables:
                 try:
                     df = pd.read_json(r.content.replace(b"\\", b""))
                     df.columns = df.iloc[0, :].tolist()
@@ -189,6 +192,11 @@ class CensusData(object):
                 except:
                     msg = "Couldn't parse query result into DataFrame."
                     raise QueryError(msg, r)
+            else:
+                msg = f"Query failed with status code {r.status_code}. "
+                msg += f"Response from server was\n{r.content}"
+                raise QueryError(msg, r)
+
 
         for k in df.columns:
             if k == "state" or k == "county" or k == "us":
@@ -224,7 +232,7 @@ class CensusData(object):
             with open(fn, "r") as f:
                 raw = json.load(f)
         else:
-            r = requests.get(self.meta["c_variablesLink"].iloc[0])
+            r = self.sess.get(self.meta["c_variablesLink"].iloc[0])
             raw = r.json()
             with open(fn, "w") as f:
                 f.write(json.dumps(r.json()))
